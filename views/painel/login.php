@@ -11,7 +11,7 @@
 <body>
     <div class="linha">
         <div class="coluna col4">&nbsp;</div>
-        <div class="coluna col4">
+        <div class="coluna col4 login">
             <h2><?php echo $h2; ?></h2>
             <?php    
                 if($msg = get_msg()):

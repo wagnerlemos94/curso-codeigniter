@@ -6,6 +6,7 @@ class Pagina extends CI_Controller{
     function __construct(){
         parent::__construct();
         $this->load->helper('url');
+        $this->load->model('option_model', 'option');
     }
  
     public function index(){

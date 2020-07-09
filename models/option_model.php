@@ -7,14 +7,14 @@ class Option_model extends CI_Model{
         parent::__construct();
     }
 
-    public function get_option($option_name){
+    public function get_option($option_name, $default_value=NULL){
         $this->db->where('option_name', $option_name);
         $query = $this->db->get('options', 1);
         if($query->num_rows() == 1):
             $row =  $query->row();
             return $row->option_value;
         else:
-            return NULL;
+            return $default_value;
         endif;
     }
 
