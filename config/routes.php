@@ -56,3 +56,9 @@ $route['clientes'] = 'pagina/clientes';
 $route['servicos'] = 'pagina/servicos';
 $route['sobre'] = 'pagina/sobre';
 $route['contato'] = 'pagina/contato';
+$route['post'] = 'pagina';
+$route['post/(:num)'] = 'pagina/post/$1';
+$route['login'] = 'setup/login';
+$route['painel'] = 'setup/login';
+
+
