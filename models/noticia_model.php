@@ -37,4 +37,21 @@ class Noticia_model extends CI_Model{
         endif;
     }
 
+    public function get_single($id=0){
+        $this->db->where('id', $id);
+        $query = $this->db->get('noticias', 1);
+        if($query->num_rows() == 1):
+            $row = $query->row();
+            return $row;
+        else:
+            return NULL;
+        endif;
+    }
+
+    public function excluir($id=0){
+        $this->db->where('id',$id);
+        $this->db->delete('noticias');
+        return $this->db->affected_rows();
+    }
+
 }

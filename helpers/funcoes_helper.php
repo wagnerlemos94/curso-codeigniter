@@ -39,3 +39,17 @@ if(!function_exists('config_upload')):
         return $config;
     }
 endif;
+
+if(!function_exists('to_bd')):
+    //codifica o html para salvar no banco de dados
+    function to_bd($string=NULL){
+        return htmlentities($string);
+    }
+endif;
+
+if(!function_exists('to_html')):
+    //codifica o html para salvar no banco de dados
+    function to_html($string=NULL){
+        return html_entity_decode($string);
+    }
+endif;

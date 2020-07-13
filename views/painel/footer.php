@@ -7,5 +7,8 @@
 			</footer>
 		</div>
 	</div>
+	<script>
+		$('.editorhtml').jqte();
+	</script>
 </body>
 </html>
