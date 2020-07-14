@@ -51,7 +51,7 @@ class Noticia extends CI_Controller{
                 //salvar no banco de dados
                 if($id = $this->noticia->salvar($dados_insert)):
                     set_msg('<p>Notícia cadastrada com sucesso!</p>');
-                    redirect('noticia/listar','refresh');
+                    redirect('noticia/editar/'.$id,'refresh');
                 else:
                     set_msg('<p>Erro! Notícia não sucesso!</p>');
                 endif;
@@ -70,22 +70,23 @@ class Noticia extends CI_Controller{
         $this->load->view('painel/noticias', $dados);            
     }
 
+    
     public function excluir(){
         //verifica se o usuário está logado
         verifica_login();
         //verifica se foi passado o id da notícia
         $id = $this->uri->segment(3);
         if($id > 0):
-            //id informado, continuar com exclusão
+            //id informado, continuar com edição
             if($noticia = $this->noticia->get_single($id)):
                 $dados['noticia'] = $noticia;
+                $dados_update['id'] = $noticia->id;
             else:
-                set_msg('<p>Notícia inexistente! Escolha uma notícia para excluir.</p>');
+                set_msg('<p>Notícia inexistente! Escolha uma notícia para editar.</p>');
                 redirect('noticia/listar','refresh');
             endif;    
         else:
-            echo $id;exit;
-            set_msg('<p>Você deve escolher uma notícia para excluir!</p>');
+            set_msg('<p>Você deve escolher uma notícia para editar!</p>');
             redirect('noticia/listar','refresh');
         endif;
 
@@ -114,5 +115,78 @@ class Noticia extends CI_Controller{
         $dados['tela'] = 'excluir';
         $this->load->view('painel/noticias', $dados);            
     }
+    
+    public function editar(){
+        //verifica se o usuário está logado
+        verifica_login();
+
+        //verifica se foi passado o id da notícia
+        $id = $this->uri->segment(3);
+        if($id > 0):
+            //id informado, continuar com edição
+            if($noticia = $this->noticia->get_single($id)):
+                $dados['noticia'] = $noticia;
+                $dados_update['id'] = $noticia->id;
+            else:
+                set_msg('<p>Notícia inexistente! Escolha uma notícia para excluir.</p>');
+                redirect('noticia/listar','refresh');
+            endif;    
+        else:
+            set_msg('<p>Você deve escolher uma notícia para excluir!</p>');
+            redirect('noticia/listar','refresh');
+        endif;
+
+            //regas de validação
+            $this->form_validation->set_rules('titulo', 'TITULO', 'trim|required');
+            $this->form_validation->set_rules('conteudo', 'CONTEUDO', 'trim|required');    
         
+        //verifica a validação
+        if($this->form_validation->run() == FALSE):
+            if(validation_errors()):
+                set_msg(validation_errors());
+            endif;
+        else:
+            $this->load->library('upload', config_upload());
+            if(isset($_FILES['imagem']) && $_FILES['imagem']['name'] != ''):
+                //foi enviada uma imagem, devo fazer o upload
+                if($this->upload->do_upload('imagem')):
+                    //upload foi efetuada
+                    $imagem_antiga = 'uploads/'.$noticia->imagem;
+                    $dados_upload = $this->upload->data();
+                    $dados_form = $this->input->post();
+                    $dados_update['titulo'] = to_bd($dados_form['titulo']);
+                    $dados_update['conteudo'] = to_bd($dados_form['conteudo']);
+                    $dados_update['imagem'] = $dados_upload['file_name'];
+                    if($this->noticia->salvar($dados_update)):
+                        unlink($imagem_antiga);
+                        set_msg('<p>Notícia alterada com sucesso!</p>');
+                        $dados['noticia']->imagem = $dados_update['imagem'];
+                    else:
+                        set_msg('<p>Erro! nenhuma alteração foi salva.</p>');
+                    endif;
+                else:
+                    //erro no upload
+                    $msg = $this->upload->display_errors();
+                    $msg .= '<p>São permitidos arquivos JPG e PNG de até 512KB.</p>';
+                    set_msg($msg);
+                endif;
+            else:
+                //não foi enviada uma imagem pelo form
+                $dados_form = $this->input->post();
+                $dados_update['titulo'] = to_bd($dados_form['titulo']);
+                $dados_update['conteudo'] = to_bd($dados_form['conteudo']);
+                if($this->noticia->salvar($dados_update)):
+                    set_msg('<p>Notícia alterada com sucesso!</p>');
+                else:
+                    set_msg('<p>Erro! nenhuma alteração foi salva.</p>');
+                endif;
+            endif;
+        endif;
+
+        //carrega a view
+        $dados['titulo'] = 'RBernadi - Edição de notícias';
+        $dados['h2'] = 'Edição de notícias';
+        $dados['tela'] = 'editar';
+        $this->load->view('painel/noticias', $dados);            
+    }
 }

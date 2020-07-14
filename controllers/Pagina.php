@@ -7,6 +7,7 @@ class Pagina extends CI_Controller{
         parent::__construct();
         $this->load->helper('url');
         $this->load->model('option_model', 'option');
+        $this->load->model('noticia_model', 'noticia');
     }
  
     public function index(){
@@ -55,5 +56,24 @@ class Pagina extends CI_Controller{
 
         $dados['titulo'] = 'Fale comigo - RBernardi Desenvolvimento web';
         $this->load->view('contato', $dados);
+    }
+
+    public function post(){
+        if(($id = $this->uri->segment(2)) > 0):
+            if($noticia = $this->noticia->get_single($id)):
+                $dados['titulo'] = to_html($noticia->titulo).'- RBernadi';
+                $dados['not_titulo'] = to_html($noticia->titulo);
+                $dados['not_conteudo'] = to_html($noticia->conteudo);
+                $dados['not_imagem'] = $noticia->imagem;
+            else:
+                $dados['titulo'] = 'Página não encontrada - RBernadi';
+                $dados['not_titulo'] = 'Notícia não encontrada';
+                $dados['not_conteudo'] = '<p>Nenhum notícia foi encontrada com base nos parâmetros fornecidos</p>';
+                $dados['not_imagem'] = '';
+            endif;
+        else:
+            redirect(base_url(), 'refresh');
+        endif;
+        $this->load->view('post', $dados);
     }
 }

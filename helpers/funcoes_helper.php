@@ -53,3 +53,14 @@ if(!function_exists('to_html')):
         return html_entity_decode($string);
     }
 endif;
+
+if(!function_exists('resumo_post')):
+    //gera um texto parcial a partir do conteúdp de um post
+    function resumo_post($string=NULL, $tamanho=100){
+        $string = to_html($string);
+        $string = strip_tags($string);
+        $string = substr($string, 0, $tamanho);
+        return $string;
+    }
+endif;
+
